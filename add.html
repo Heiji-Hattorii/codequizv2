@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Administrateur - Gestion des Quiz</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f4f4f9;
+      color: #000;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar {
+      width: 100%;
+      background-image: url(./img/97a66cda02c6d1dd3b23b46673dc42d7.jpg);
+      padding: 10px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    .navbar a {
+      color: #9f216d;
+      padding: 10px 20px;
+      text-decoration: none;
+      font-size: 1.2em;
+      margin: 0 15px;
+      font-weight: 600;
+
+    }
+
+    .navbar a:hover {
+      background-color: #575757;
+      border-radius: 5px;
+      color: #c58886
+    }
+
+    .dashboard {
+      width: 90%;
+      margin: auto;
+      padding: 20px;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      margin-top: 70px;
+    }
+
+    h1,
+    h2 {
+      color: #de66ec;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+
+    th {
+      background-color: #de66ec;
+      color: #fff;
+      padding: 10px;
+    }
+
+    td {
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
+
+    .quiz-form,
+    .question-management {
+      margin-top: 30px;
+    }
+
+    input,
+    textarea,
+    select,
+    button {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+    }
+
+    button {
+      background-color: #ae58b8;
+      color: #fff;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background-color: #f066d3;
+    }
+
+    .options {
+      display: none;
+    }
+
+    @media (max-width: 1200px) {
+      .dashboard {
+        width: 85%;
+      }
+
+      table {
+        font-size: 0.9em;
+      }
+
+      th,
+      td {
+        padding: 8px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .dashboard {
+        width: 95%;
+      }
+
+      table {
+        font-size: 0.8em;
+      }
+
+      th,
+      td {
+        padding: 6px;
+      }
+
+      .navbar a {
+        font-size: 0.9em;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .dashboard {
+        width: 100%;
+        padding: 15px;
+      }
+
+      table {
+        font-size: 0.7em;
+      }
+
+      th,
+      td {
+        padding: 5px;
+      }
+
+      .navbar {
+        flex-direction: column;
+        padding: 10px;
+      }
+
+      .navbar a {
+        margin: 5px 0;
+        font-size: 0.8em;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="navbar">
+    <a href="indexfirst.html">Home</a>
+    <a href="add.html">Dashboard</a>
+  </div>
+  <div class="dashboard">
+    <h1>Gestion des Quiz</h1>
+
+    <!-- Section pour la création d'un quiz -->
+    <section class="quiz-form">
+      <h2>Création de Quiz</h2>
+      <form id="createQuizForm">
+        <label>Titre: <input type="text" name="title" required></label>
+        <label>Durée (en minutes): <input type="number" name="duration" required ></label>
+        <label>Catégorie: <input type="text" name="category" required></label>
+        <label>Niveau de difficulté:
+          <select name="difficulty">
+            <option value="facile">Facile</option>
+            <option value="moyen">Moyen</option>
+            <option value="difficile">Difficile</option>
+          </select>
+        </label>
+        <label>Image du Quiz (URL): <input type="text" name="quizImageUrl"
+            placeholder="le lien vers votre photo"></label>
+        <button type="submit">Créer Quiz</button>
+      </form>
+    </section>
+
+    <!-- Section pour l'ajout de questions à un quiz sélectionné -->
+    <section class="question-management">
+      <h2>Ajouter des Questions au Quiz</h2>
+      <form id="addQuestionForm">
+        <label>Quiz à modifier:
+          <select id="quizSelector"></select>
+        </label>
+        <label>Type de question:
+          <select name="questionType" id="questionType">
+            <option value="qcm">QCM</option>
+            <option value="vraiFaux">Vrai/Faux</option>
+            <option value="textuelle">Réponse Textuelle</option>
+          </select>
+        </label>
+        <label>Question: <input type="text" name="questionText" required></label>
+
+        <!-- Options pour le type de question QCM -->
+        <div id="qcmOptions" class="options">
+          <label>Option 1: <input type="text" name="option1"></label>
+          <label>Option 2: <input type="text" name="option2"></label>
+          <label>Option 3: <input type="text" name="option3"></label>
+          <label>Option 4: <input type="text" name="option4"></label>
+          <label>Bonne réponse: <input type="number" name="correctOption" min="1" max="4"></label>
+        </div>
+
+        <!-- Options pour le type Vrai/Faux -->
+        <div id="vraiFauxOptions" class="options">
+          <label>Réponse:
+            <select name="vraiFauxAnswer">
+              <option value="true">Vrai</option>
+              <option value="false">Faux</option>
+            </select>
+          </label>
+        </div>
+
+        <!-- Options pour le type Textuelle -->
+        <div id="textuelleOptions" class="options">
+          <label>Réponses acceptées (séparées par des virgules): <input type="text" name="textAnswers"></label>
+        </div>
+
+        <label>Explication: <textarea name="explanation"></textarea></label>
+        <button type="submit">Ajouter Question</button>
+      </form>
+    </section>
+
+    <!-- Tableau des quiz -->
+    <h2>Liste des Quiz</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Titre</th>
+          <th>Catégorie</th>
+          <th>Durée</th>
+          <th>Questions</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="quizTable"></tbody>
+    </table>
+  </div>
+
+  <script>
+    const quizzes = JSON.parse(localStorage.getItem('quizzes')) || [];
+    function displayQuizzes() {
+      const quizTable = document.getElementById("quizTable");
+      const quizSelector = document.getElementById("quizSelector");
+      quizTable.innerHTML = "";
+      quizSelector.innerHTML = "";
+
+      quizzes.forEach((quiz, index) => {
+        const row = quizTable.insertRow();
+        row.insertCell(0).innerText = quiz.title;
+        row.insertCell(1).innerText = quiz.difficulty;
+        row.insertCell(2).innerText = quiz.duration + " min"; 
+        row.insertCell(3).innerText = Array.isArray(quiz.questions) ? quiz.questions.length : 0;
+        row.insertCell(4).innerHTML = `<button onclick="deleteQuiz(${index})">Supprimer</button>`;
+
+        const option = document.createElement("option");
+        option.value = index;
+        option.innerText = quiz.title;
+        quizSelector.appendChild(option);
+      });
+    }
+
+    document.getElementById("createQuizForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const title = e.target.title.value;
+      const category = e.target.category.value;
+      const difficulty = e.target.difficulty.value;
+      const duration = parseInt(e.target.duration.value);
+      const quizImageUrl = e.target.quizImageUrl.value;
+      const quiz = {
+        title,
+        category,
+        difficulty,
+        duration,
+        image: quizImageUrl,
+        questions: []
+
+      };
+
+      quizzes.push(quiz);
+      localStorage.setItem("quizzes", JSON.stringify(quizzes));
+      displayQuizzes();
+      e.target.reset();
+    });
+
+    // Ajouter une question au quiz sélectionné
+    document.getElementById("addQuestionForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const quizIndex = e.target.quizSelector.value;
+      const questionType = e.target.questionType.value;
+      const questionText = e.target.questionText.value;
+      const explanation = e.target.explanation.value;
+
+      const question = {
+        text: questionText,
+        type: questionType,
+        explanation,
+        options: [],
+        correctAnswer: null
+      };
+
+      if (questionType === 'qcm') {
+        question.options = [
+          e.target.option1.value,
+          e.target.option2.value,
+          e.target.option3.value,
+          e.target.option4.value
+        ];
+        question.correctAnswer = question.options[parseInt(e.target.correctOption.value) - 1];
+      } else if (questionType === 'vraiFaux') {
+        question.options = ["Faux", "Vrai"];
+        question.correctAnswer = e.target.vraiFauxAnswer.value === "true" ? "Vrai" : "Faux";
+      } else if (questionType === 'textuelle') {
+        question.correctAnswer = e.target.textAnswers.value.split(",").map(ans => ans.trim());
+      }
+
+      quizzes[quizIndex].questions.push(question);
+      localStorage.setItem("quizzes", JSON.stringify(quizzes));
+      displayQuizzes();
+      e.target.reset();
+    });
+
+    function deleteQuiz(index) {
+      quizzes.splice(index, 1);
+      localStorage.setItem("quizzes", JSON.stringify(quizzes));
+      displayQuizzes();
+    }
+
+    displayQuizzes();
+    document.getElementById("questionType").addEventListener("change", (e) => {
+      document.querySelectorAll(".options").forEach(option => option.style.display = "none");
+      document.getElementById(`${e.target.value}Options`).style.display = "block";
+    });
+  </script>
+</body>
+
+</html>
